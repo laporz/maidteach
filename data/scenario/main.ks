@@ -6,7 +6,7 @@
 *mainloop
 
 [cm]
-[hidemenubutton]
+[showmenubutton]
 [bg storage="room.jpg" time=1]
 
 [layopt layer=message0 visible=false]
@@ -17,7 +17,12 @@ GameUI.drawStats();
 f._actions_left = f.actions_left || 0;
 f._is_night = f.phase === "night";
 var jobs = GameLogic.getAvailableJobs();
-f._can_job = (jobs.length > 0 && jobs[0].tier > (f.job_tier || 0));
+var curTier = f.job_tier || 0;
+var curName = f.job_name || "";
+f._can_job = jobs.some(function(j) {
+    if (curTier === 4) return j.name !== curName;
+    return j.tier > curTier;
+});
 [endscript]
 
 [if exp="f._actions_left <= 0"]
@@ -229,6 +234,7 @@ GameUI.drawStats();
 
 [cm]
 [iscript]
+f._shop_entered = false;
 GameUI.drawStats();
 [endscript]
 [layopt layer=message0 visible=false]
@@ -243,10 +249,16 @@ GameUI.drawStats();
 [cm]
 [iscript]
 GameUI.drawStats();
+var cur = f.outfit || "maid_mini";
+GameUI.drawShopItems([
+    { id:"maid_mini",      name:"メイド服(ミニ)",    price:12000, category:"outfit", isCurrent: cur==="maid_mini"      },
+    { id:"maid_long",      name:"メイド服(ロング)",  price:15000, category:"outfit", isCurrent: cur==="maid_long"      },
+    { id:"sailor_white",   name:"セーラー服(白)",    price:10000, category:"outfit", isCurrent: cur==="sailor_white"   },
+    { id:"sailor_black",   name:"セーラー服(黒)",    price:10000, category:"outfit", isCurrent: cur==="sailor_black"   },
+    { id:"virgin_killer",  name:"童貞を殺すセーター", price:40000, category:"outfit", isCurrent: cur==="virgin_killer"  }
+], "*sel_shop", "*shop_clothes");
 [endscript]
-[layopt layer=message0 visible=true]
-（服飾店は近日実装予定です）[p]
-@jump target="*mainloop"
+[layopt layer=message0 visible=false]
 [s]
 
 *shop_salon
@@ -254,19 +266,116 @@ GameUI.drawStats();
 [iscript]
 GameUI.drawStats();
 [endscript]
-[layopt layer=message0 visible=true]
-（美容室は近日実装予定です）[p]
-@jump target="*mainloop"
+[layopt layer=message0 visible=false]
+
+[glink text="髪型変更" x=530  y=760 width=360 height=70 color=0xaabbff size=26 target="*shop_salon_style"]
+[glink text="髪色変更" x=1030 y=760 width=360 height=70 color=0xaabbff size=26 target="*shop_salon_color"]
+[glink text="← 戻る"  x=1670 y=860 width=180 height=70 color=0x777777 size=22 target="*sel_shop"]
+[s]
+
+*shop_salon_style
+[cm]
+[iscript]
+GameUI.drawStats();
+var cur = f.hair_style || "long";
+GameUI.drawShopItems([
+    { id:"short",     name:"ショートヘア", price:3000, category:"hair_style", isCurrent: cur==="short"     },
+    { id:"semi_long", name:"セミロング",   price:3000, category:"hair_style", isCurrent: cur==="semi_long" },
+    { id:"long",      name:"ロングヘア",   price:3000, category:"hair_style", isCurrent: cur==="long"      },
+    { id:"twin",      name:"ツインテール", price:3000, category:"hair_style", isCurrent: cur==="twin"      },
+    { id:"pony",      name:"ポニーテール", price:3000, category:"hair_style", isCurrent: cur==="pony"      }
+], "*shop_salon", "*shop_salon_style");
+[endscript]
+[layopt layer=message0 visible=false]
+[s]
+
+*shop_salon_color
+[cm]
+[iscript]
+GameUI.drawStats();
+var cur = f.hair_color || "gold";
+GameUI.drawShopItems([
+    { id:"white",  name:"白",   price:3000, category:"hair_color", isCurrent: cur==="white"  },
+    { id:"black",  name:"黒",   price:3000, category:"hair_color", isCurrent: cur==="black"  },
+    { id:"red",    name:"赤",   price:3000, category:"hair_color", isCurrent: cur==="red"    },
+    { id:"pink",   name:"ピンク", price:3000, category:"hair_color", isCurrent: cur==="pink"   },
+    { id:"green",  name:"緑",   price:3000, category:"hair_color", isCurrent: cur==="green"  },
+    { id:"blue",   name:"青",   price:3000, category:"hair_color", isCurrent: cur==="blue"   },
+    { id:"gold",   name:"金",   price:3000, category:"hair_color", isCurrent: cur==="gold"   }
+], "*shop_salon", "*shop_salon_color");
+[endscript]
+[layopt layer=message0 visible=false]
 [s]
 
 *shop_magic
 [cm]
 [iscript]
 GameUI.drawStats();
+var curH = f.height    || "low";
+var curB = f.body_type || "slender";
+GameUI.drawShopItems([
+    { id:"high",      name:"高身長になる",    price:50000,  category:"height",    isCurrent: curH==="high"      },
+    { id:"low",       name:"低身長になる",    price:50000,  category:"height",    isCurrent: curH==="low"       },
+    { id:"glamorous", name:"グラマラスになる", price:150000, category:"body_type", isCurrent: curB==="glamorous" },
+    { id:"slender",   name:"スレンダーになる", price:150000, category:"body_type", isCurrent: curB==="slender"   }
+], "*sel_shop", "*shop_magic");
+[endscript]
+[layopt layer=message0 visible=false]
+[s]
+
+; 購入確認（日中・夜共通）
+*confirm_purchase
+
+[cm]
+[iscript]
+GameUI.drawStats();
+f._shop_can_buy = (f.money || 0) >= f._shop_item_price;
 [endscript]
 [layopt layer=message0 visible=true]
-（魔法薬店は近日実装予定です）[p]
-@jump target="*mainloop"
+[if exp="f._shop_can_buy"]
+[emb exp="f._shop_item_name"] を購入しますか？　[emb exp="f._shop_item_price"] 円
+[glink text="購入する"   x=660  y=860 width=260 height=70 color=0xffd700 size=28 target="*do_purchase"]
+[glink text="キャンセル" x=1000 y=860 width=260 height=70 color=0x777777 size=26 target="*shop_back_from_confirm"]
+[else]
+所持金が足りません。（[emb exp="f.money"] 円 / 必要: [emb exp="f._shop_item_price"] 円）[p]
+@jump target="*shop_back_from_confirm"
+[endif]
+[s]
+
+*shop_back_from_confirm
+[iscript]
+TYRANO.kag.ftag.startTag("jump", { target: f._shop_back_target || "*sel_shop", storage: "" });
+[endscript]
+[s]
+
+*do_purchase
+
+[cm]
+[iscript]
+if (!f._shop_entered) {
+    f.actions_left = (f.actions_left || 0) - 1;
+    f._shop_entered = true;
+}
+f.money = (f.money || 0) - f._shop_item_price;
+if (f._shop_category === "outfit") {
+    f.outfit = f._shop_item_id;
+    if (!f.owned_outfits) f.owned_outfits = {};
+    f.owned_outfits[f._shop_item_id] = true;
+}
+if (f._shop_category === "hair_style")   f.hair_style   = f._shop_item_id;
+if (f._shop_category === "hair_color")   f.hair_color   = f._shop_item_id;
+if (f._shop_category === "height")       f.height       = f._shop_item_id;
+if (f._shop_category === "body_type")    f.body_type    = f._shop_item_id;
+if (f._shop_category === "night_outfit") {
+    f.night_outfit = f._shop_item_id;
+    if (!f.owned_night_outfits) f.owned_night_outfits = {};
+    f.owned_night_outfits[f._shop_item_id] = true;
+}
+GameUI.drawStats();
+[endscript]
+[layopt layer=message0 visible=true]
+[emb exp="f._shop_item_name"] を購入しました！[p]
+@jump target="*shop_back_from_confirm"
 [s]
 
 ; ==========================================================
@@ -278,8 +387,22 @@ GameUI.drawStats();
 [iscript]
 GameUI.drawStats();
 var jobs = GameLogic.getAvailableJobs();
-f._next_job_name = jobs.length > 0 ? jobs[0].name : "";
-f._next_job_tier = jobs.length > 0 ? jobs[0].tier  : 0;
+var curTier = f.job_tier || 0;
+var curName = f.job_name || "";
+var eligible = jobs.filter(function(j) {
+    if (curTier === 4) return j.name !== curName;
+    return j.tier > curTier;
+});
+GameUI.drawJobButtons(eligible, "*mainloop");
+[endscript]
+[layopt layer=message0 visible=false]
+[s]
+
+*confirm_job_selected
+
+[cm]
+[iscript]
+GameUI.drawStats();
 [endscript]
 [layopt layer=message0 visible=true]
 [emb exp="f._next_job_name"] に転職しますか？（行動を1消費します）
@@ -291,7 +414,7 @@ f._next_job_tier = jobs.length > 0 ? jobs[0].tier  : 0;
 
 [cm]
 [iscript]
-GameLogic.changeJob(f._next_job_name, f._next_job_tier);
+GameLogic.changeJob(f._next_job_name, f._next_job_tier, f._next_job_route);
 f._night_just_unlocked = (f._next_job_tier === 2);
 GameUI.drawStats();
 [endscript]
@@ -307,10 +430,16 @@ GameUI.drawStats();
 *mainloop_night
 
 [cm]
-[hidemenubutton]
+[showmenubutton]
 [iscript]
 GameUI.drawStats();
+f._actions_left = f.actions_left || 0;
 [endscript]
+
+[if exp="f._actions_left <= 0"]
+@jump target="*phase_end"
+[endif]
+
 [layopt layer=message0 visible=false]
 
 [glink text="ふれあい" x=270  y=860 width=260 height=70 color=0xffaabb size=26 target="*sel_fureai"]
@@ -450,6 +579,7 @@ GameUI.drawStats();
 
 [cm]
 [iscript]
+f._shop_entered = false;
 GameUI.drawStats();
 [endscript]
 [layopt layer=message0 visible=false]
@@ -463,78 +593,27 @@ GameUI.drawStats();
 [cm]
 [iscript]
 GameUI.drawStats();
+var cur = f.night_outfit || "";
+GameUI.drawShopItems([
+    { id:"negligee_white", name:"ネグリジェ(白)",    price:20000, category:"night_outfit", isCurrent: cur==="negligee_white" },
+    { id:"negligee_black", name:"ネグリジェ(黒)",    price:20000, category:"night_outfit", isCurrent: cur==="negligee_black" },
+    { id:"bikini_black",   name:"ビキニ(黒)",        price:50000, category:"night_outfit", isCurrent: cur==="bikini_black"   },
+    { id:"micro_white",    name:"マイクロビキニ(白)", price:50000, category:"night_outfit", isCurrent: cur==="micro_white"    },
+    { id:"bandage",        name:"絆創膏",            price:5000,  category:"night_outfit", isCurrent: cur==="bandage"        }
+], "*night_shop", "*night_shop_clothes");
 [endscript]
 [layopt layer=message0 visible=false]
-
-[glink text="ネグリジェ(3000円)"     x=155  y=660 width=380 height=70 color=0xffaabb size=22 target="*pre_night_buy_negligee"]
-[glink text="ビキニ(5000円)"         x=555  y=660 width=380 height=70 color=0xffaabb size=22 target="*pre_night_buy_bikini"]
-[glink text="マイクロビキニ(8000円)" x=955  y=660 width=380 height=70 color=0xffaabb size=22 target="*pre_night_buy_micro"]
-[glink text="絆創膏(10000円)"        x=1355 y=660 width=380 height=70 color=0xffaabb size=22 target="*pre_night_buy_bandage"]
-[glink text="← 戻る"                x=1670 y=860 width=180 height=70 color=0x777777 size=22 target="*night_shop"]
 [s]
 
-*pre_night_buy_negligee
-[iscript]
-f._shop_item_id    = "negligee";
-f._shop_item_name  = "ネグリジェ";
-f._shop_item_price = 3000;
-[endscript]
-@jump target="*confirm_night_buy"
-
-*pre_night_buy_bikini
-[iscript]
-f._shop_item_id    = "bikini";
-f._shop_item_name  = "ビキニ";
-f._shop_item_price = 5000;
-[endscript]
-@jump target="*confirm_night_buy"
-
-*pre_night_buy_micro
-[iscript]
-f._shop_item_id    = "micro_bikini";
-f._shop_item_name  = "マイクロビキニ";
-f._shop_item_price = 8000;
-[endscript]
-@jump target="*confirm_night_buy"
-
-*pre_night_buy_bandage
-[iscript]
-f._shop_item_id    = "bandage";
-f._shop_item_name  = "絆創膏";
-f._shop_item_price = 10000;
-[endscript]
-@jump target="*confirm_night_buy"
-
-*confirm_night_buy
+; ==========================================================
+; キャラステータス画面
+; ==========================================================
+*chara_status
 
 [cm]
 [iscript]
-GameUI.drawStats();
-f._shop_can_buy = (f.money || 0) >= f._shop_item_price;
+GameUI.showCharaStatus();
 [endscript]
-[layopt layer=message0 visible=true]
-[if exp="f._shop_can_buy"]
-[emb exp="f._shop_item_name"] を購入しますか？　[emb exp="f._shop_item_price"] 円（行動を1消費します）
-[glink text="購入する"   x=660  y=860 width=260 height=70 color=0xffd700 size=28 target="*do_night_buy"]
-[glink text="キャンセル" x=1000 y=860 width=260 height=70 color=0x777777 size=26 target="*night_shop_clothes"]
-[else]
-所持金が足りません。（所持金: [emb exp="f.money"] 円 / 必要: [emb exp="f._shop_item_price"] 円）[p]
-@jump target="*night_shop_clothes"
-[endif]
-[s]
-
-*do_night_buy
-
-[cm]
-[iscript]
-GameLogic.buyItem(f._shop_item_price);
-f.night_outfit = f._shop_item_id;
-GameUI.drawStats();
-[endscript]
-[layopt layer=message0 visible=true]
-[emb exp="f._shop_item_name"] を購入しました！[p]
-
-@jump target="*mainloop_night"
 [s]
 
 ; ==========================================================

@@ -31,6 +31,7 @@ f.money = 0;
 // 職業
 f.job_tier       = 0;
 f.job_name       = "無職";
+f.job_route      = "";
 f.night_unlocked = false;
 
 // 外見（初期：金髪・ロング・低身長・スレンダー・メイド服ミニ）
@@ -48,6 +49,10 @@ f.actions_left = GameLogic.getMaxActions();
 
 // エピソード解放フラグ
 f.episodes = {};
+
+// 所持品管理（初期服はmaid_miniを所持）
+f.owned_outfits       = { maid_mini: true };
+f.owned_night_outfits = {};
 
 [endscript]
 
