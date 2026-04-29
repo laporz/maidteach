@@ -1,7 +1,7 @@
 [cm]
 @clearstack
 [hidemenubutton]
-@bg storage="title.jpg" time=1
+@bg storage="title.png" time=1
 @wait time=200
 
 *start

@@ -7,7 +7,7 @@
 
 [cm]
 [showmenubutton]
-[bg storage="room.jpg" time=1]
+[bg storage="room.png" time=1]
 
 [layopt layer=message0 visible=false]
 [position layer=message0 page=fore left=160 top=955 width=1600 height=90 opacity=210 margint=18 marginl=40 marginr=40 marginb=10]
