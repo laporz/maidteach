@@ -254,3 +254,36 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
   - ステータスタブ→基本ステータス・職業・所持金を表示
   - 服→現在着用中の服はグレーアウトし、着替え可能な服は選択可能、未購入の場合は「？」を表示
   - エッチステータス→部位の開発状況・体型・身長を表示
+
+## キャラの立ち絵
+- .\data\image\chara\ 配下に格納する
+- それぞれ4タイプの素体を用意する
+- 髪型・服装・目・口に関しては、透過PNGを重ねることで表現する、ティラノスクリプトの標準機能を使用する
+- 開発中は仮素材として、キャラ立ち絵は touka_test.png を使用する
+
+## 背景について
+- .\data\image\background\ 配下に格納する
+- 日中フェーズは pharmacy.png を背景とする
+- 夜フェーズは bedroom.png を背景とする
+- 買い物は、shop.png を背景とする
+- それぞれ転職イベントは、以下の割り当てで背景を設定する
+  - 見習い魔術師：majo.png
+  - 見習い剣士：colosseum.png
+  - 修道女：church.png
+  - 見習い錬金術師：
+  - 見習い吟遊詩人：bar.png
+  - 魔術師：pentagram.png
+  - 剣士：colosseum2.png
+  - プリエステス：cathedral.png
+  - 錬金術師：alchemy.png
+  - 吟遊詩人：largehall.png
+  - 大賢者：kenja.png
+  - パラディン：angelknight.png
+  - 聖女：godstatue.png
+  - アルケミマスター：alchemymaster.png
+  - スーパーアイドル：idolstage.png
+  - エレメンタルマスター：elemental.png
+  - ハイエルフクイーン：highelf.png
+  - 聖獣使い：animals.png
+  - ナイトマスター：nightmaster.png
+
