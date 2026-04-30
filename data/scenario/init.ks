@@ -9,6 +9,19 @@ window.GameUI = {
 
     drawStats: function() {
         $("#game_stats_panel").remove();
+        $("#game_chara_img").remove();
+
+        // キャラ画像表示（命名規則ファイルが無ければ touka_test.png にフォールバック）
+        var imgFile = "chara_" + (f.height||"low") + "_" + (f.body_type||"slender") + "_"
+            + (f.outfit||"maid_mini") + "_" + (f.hair_style||"long") + "_" + (f.hair_color||"gold") + ".png";
+        var charaBase = "data/fgimage/chara/arisia/";
+        var $chara = $('<img id="game_chara_img" src="' + charaBase + imgFile + '"'
+            + ' style="position:absolute;left:250px;bottom:80px;max-height:860px;'
+            + 'object-fit:contain;pointer-events:none;z-index:100;">');
+        $chara.on("error", function() {
+            $(this).off("error").attr("src", charaBase + "touka_test.png");
+        });
+        $("#tyrano_base").append($chara);
 
         var isNight  = f.phase === "night";
         var labels   = isNight
@@ -51,7 +64,7 @@ window.GameUI = {
         var html = '<div id="game_stats_panel"'
             + ' style="position:absolute;top:20px;left:1600px;width:300px;'
             + 'background:rgba(0,0,0,0.80);border:1px solid #666;border-radius:8px;'
-            + 'padding:16px;color:white;font-size:15px;z-index:500;">'
+            + 'padding:16px;color:white;font-size:15px;z-index:1000000;">'
             + '<div style="pointer-events:none;">'
             + '<div style="font-size:17px;font-weight:bold;margin-bottom:8px;'
             + 'border-bottom:1px solid #555;padding-bottom:6px;">'
@@ -63,26 +76,22 @@ window.GameUI = {
             + '<div style="margin-top:8px;border-top:1px solid #555;padding-top:6px;">'
             + '所持金: <span style="color:#ffd700;">¥' + (f.money||0).toLocaleString() + '</span></div>'
             + '</div>'
-            + '<div id="chara_status_btn" style="margin-top:10px;padding:7px 0;'
+            + '<div onclick="GameUI.showCharaStatus();" style="margin-top:10px;padding:7px 0;'
             + 'background:rgba(80,80,80,0.7);border:1px solid #999;border-radius:6px;'
             + 'text-align:center;font-size:14px;color:#ddd;cursor:pointer;pointer-events:auto;">'
             + 'キャラステータス</div>'
             + '</div>';
 
-        var $panel = $(html);
-        $panel.find("#chara_status_btn").on("click", function() {
-            GameUI.showCharaStatus();
-        });
-        $("#tyrano_base").append($panel);
+        $("#tyrano_base").append(html);
     },
 
-    clear: function() { $("#game_stats_panel").remove(); },
+    clear: function() { $("#game_stats_panel").remove(); $("#game_chara_img").remove(); },
 
     // items: [{id, name, price, category, isCurrent}]
     // parentTarget: ← 戻るの遷移先, selfTarget: 購入後・キャンセル後の遷移先
     drawShopItems: function(items, parentTarget, selfTarget) {
         $("#shop_items").remove();
-        var $wrap = $('<div id="shop_items" style="position:absolute;top:0;left:0;width:1920px;height:1080px;pointer-events:none;z-index:600;"></div>');
+        var $wrap = $('<div id="shop_items" style="position:absolute;top:0;left:0;width:1920px;height:1080px;pointer-events:none;z-index:1000010;"></div>');
         var BTN_W = 240, BTN_H = 80, GAP = 16, ROW_H = 104;
         var rows = [];
         for (var i = 0; i < items.length; i += 5) rows.push(items.slice(i, i + 5));
@@ -149,13 +158,14 @@ window.GameUI = {
             bandage:        "絆創膏"
         };
 
-        var $overlay = $('<div id="chara_status_overlay" style="position:absolute;top:0;left:0;width:1920px;height:1080px;background:rgba(0,0,0,0.95);z-index:900;pointer-events:auto;"></div>');
+        var $overlay = $('<div id="chara_status_overlay" style="position:absolute;top:0;left:0;width:1920px;height:1080px;background:rgba(0,0,0,0.95);z-index:1000020;pointer-events:auto;"></div>');
 
         // 左半分：キャラ画像
+        // ファイル名規則: chara_{身長}_{体型}_{服}_{髪型}_{髪色}.png
         var imgFile = "chara_" + (f.height||"low") + "_" + (f.body_type||"slender") + "_"
             + (f.outfit||"maid_mini") + "_" + (f.hair_style||"long") + "_" + (f.hair_color||"gold") + ".png";
         var $imgArea = $('<div style="position:absolute;left:0;top:0;width:960px;height:1080px;display:flex;align-items:center;justify-content:center;"></div>');
-        var $img = $('<img id="chara_img" src="data/image/chara/' + imgFile + '" style="max-width:880px;max-height:960px;object-fit:contain;" onerror="$(this).replaceWith(\'<div style=\\\"color:#555;font-size:18px;\\\">（画像なし）</div>\');">');
+        var $img = $('<img id="chara_img" src="data/fgimage/chara/arisia/' + imgFile + '" style="max-width:880px;max-height:960px;object-fit:contain;" onerror="$(this).replaceWith(\'<div style=\\\"color:#555;font-size:18px;\\\">（画像なし）</div>\');">');
         $imgArea.append($img);
         $overlay.append($imgArea);
 
@@ -223,7 +233,7 @@ window.GameUI = {
                                 f.outfit = oid;
                                 var newFile = "chara_" + (f.height||"low") + "_" + (f.body_type||"slender") + "_"
                                     + oid + "_" + (f.hair_style||"long") + "_" + (f.hair_color||"gold") + ".png";
-                                $("#chara_img").attr("src", "data/image/chara/" + newFile);
+                                $("#chara_img").attr("src", "data/fgimage/chara/arisia/" + newFile);
                                 renderTab(1);
                             });
                         })(id);
@@ -308,7 +318,7 @@ window.GameUI = {
 
     drawJobButtons: function(jobs, cancelTarget) {
         $("#job_buttons").remove();
-        var $wrap = $('<div id="job_buttons" style="position:absolute;top:0;left:0;width:1920px;height:1080px;pointer-events:none;z-index:600;"></div>');
+        var $wrap = $('<div id="job_buttons" style="position:absolute;top:0;left:0;width:1920px;height:1080px;pointer-events:none;z-index:1000010;"></div>');
 
         // tier でグループ化
         var groups = {};
@@ -538,6 +548,31 @@ window.GameLogic = {
         f.money = (f.money||0) - price;
         f.actions_left = (f.actions_left||0) - 1;
         return true;
+    },
+
+    // ---- エピソード管理 ----
+
+    // 指定キーのエピソードを閲覧済みか返す
+    hasSeenEpisode: function(key) {
+        return !!(f.episodes && f.episodes[key]);
+    },
+
+    // 指定キーのエピソードを閲覧済みにする
+    markEpisode: function(key) {
+        if (!f.episodes) f.episodes = {};
+        f.episodes[key] = true;
+    },
+
+    // 休養・就寝時に再生すべき未視聴エピソードのラベルを返す
+    // なければ null を返す（将来ここに条件を追加する）
+    getPendingRestEpisode: function() {
+        if (!f.episodes) f.episodes = {};
+        // ここに解放済み・未視聴のエピソードチェックを追加可能
+        // 例：if (f.episodes["ending_good_sage_unlocked"] && !f.episodes["ending_good_sage_seen"]) {
+        //         f.episodes["ending_good_sage_seen"] = true;
+        //         return "*ep_ending_good_sage";
+        //     }
+        return null;
     }
 };
 

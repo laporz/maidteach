@@ -220,11 +220,25 @@ GameUI.drawStats();
 [iscript]
 f.actions_left = (f.actions_left || 0) - 1;
 GameUI.drawStats();
+var pendingEp = GameLogic.getPendingRestEpisode();
+f._has_rest_ep = !!pendingEp;
+f._rest_ep_key = pendingEp || "";
 [endscript]
-[layopt layer=message0 visible=true]
-ゆっくり休みました。[p]
 
-@jump target="*mainloop"
+[if exp="f._has_rest_ep"]
+[iscript]
+// 解放済みエピソードを再生
+var epTarget = f._rest_ep_key;
+f._ep_return = "*mainloop";
+TYRANO.kag.ftag.startTag("jump", { target: epTarget, storage: "episodes.ks" });
+[endscript]
+[else]
+; エピソードなし → 日中は休養会話、夜は就寝会話
+[iscript]
+var restTarget = (f.phase === "night") ? "*ep_rest_night" : "*ep_rest_day";
+TYRANO.kag.ftag.startTag("jump", { target: restTarget, storage: "episodes.ks" });
+[endscript]
+[endif]
 [s]
 
 ; ==========================================================
@@ -421,7 +435,17 @@ GameUI.drawStats();
 [layopt layer=message0 visible=true]
 [emb exp="f._next_job_name"] に転職しました！[if exp="f._night_just_unlocked"]　夜フェーズが解放されました！[endif][p]
 
-@jump target="*mainloop"
+[iscript]
+// 転職エピソードを発生（未視聴のみ）
+var epKey = "job_" + f.job_name;
+if (!GameLogic.hasSeenEpisode(epKey)) {
+    GameLogic.markEpisode(epKey);
+    f._ep_return = "*mainloop";
+    TYRANO.kag.ftag.startTag("jump", { target: "*ep_dispatch_job", storage: "episodes.ks" });
+} else {
+    TYRANO.kag.ftag.startTag("jump", { target: "*mainloop", storage: "" });
+}
+[endscript]
 [s]
 
 ; ==========================================================
@@ -431,6 +455,7 @@ GameUI.drawStats();
 
 [cm]
 [showmenubutton]
+[bg storage="bedroom.png" time=0]
 [iscript]
 GameUI.drawStats();
 f._actions_left = f.actions_left || 0;

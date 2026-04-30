@@ -56,7 +56,7 @@ f.owned_night_outfits = {};
 
 [endscript]
 
-; ---- 育成メインへ ----
-@jump storage="main.ks" target="*mainloop"
+; ---- オープニングへ ----
+@jump storage="opening.ks" target="*opening"
 
 [s]

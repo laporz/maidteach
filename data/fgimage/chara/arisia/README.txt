@@ -1,5 +1,7 @@
-キャラ画像ファイル命名規則
-===========================
+キャラ画像ファイル命名規則（キャラステータス画面用）
+=====================================================
+
+格納場所: data/fgimage/chara/arisia/
 
 形式: chara_{身長}_{体型}_{服}_{髪型}_{髪色}.png
 
@@ -13,6 +15,6 @@
 例:
   chara_low_slender_maid_mini_long_gold.png  （初期状態）
   chara_high_glamorous_sailor_white_twin_pink.png
-  chara_low_slender_negligee_white_long_gold.png
 
-画像が存在しない場合は「（画像なし）」と表示されます。
+※ touka_test.png は開発中の仮素材です
+※ 画像が存在しない場合はキャラステータス画面に「（画像なし）」と表示されます
