@@ -87,6 +87,27 @@ window.GameUI = {
 
     clear: function() { $("#game_stats_panel").remove(); $("#game_chara_img").remove(); },
 
+    // エピソード中のキャラ表示（現在の外見を自動反映）
+    // position: "left" / "center" / "right"
+    showEpisodeChara: function(position) {
+        $("#ep_chara_img").remove();
+        var imgFile = "chara_" + (f.height||"low") + "_" + (f.body_type||"slender") + "_"
+            + (f.outfit||"maid_mini") + "_" + (f.hair_style||"long") + "_" + (f.hair_color||"gold") + ".png";
+        var xPos = { left: 100, center: 450, right: 1100 }[position || "center"] || 450;
+        var $img = $('<img id="ep_chara_img" src="data/fgimage/chara/arisia/' + imgFile + '" '
+            + 'style="position:absolute;left:' + xPos + 'px;bottom:80px;max-height:860px;'
+            + 'object-fit:contain;pointer-events:none;z-index:100;">');
+        $img.on("error", function() {
+            $(this).off("error").attr("src", "data/fgimage/chara/arisia/touka_test.png");
+        });
+        $("#tyrano_base").append($img);
+    },
+
+    // エピソード中のキャラ非表示
+    hideEpisodeChara: function() {
+        $("#ep_chara_img").remove();
+    },
+
     // items: [{id, name, price, category, isCurrent}]
     // parentTarget: ← 戻るの遷移先, selfTarget: 購入後・キャンセル後の遷移先
     drawShopItems: function(items, parentTarget, selfTarget) {
