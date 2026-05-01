@@ -9,8 +9,8 @@
 [showmenubutton]
 [bg storage="room.png" time=1]
 
-[layopt layer=message0 visible=false]
-[position layer=message0 page=fore left=160 top=955 width=1600 height=90 opacity=210 margint=18 marginl=40 marginr=40 marginb=10]
+[layopt layer=message0 visible=true]
+[position layer=message0 page=fore left=0 top=860 width=1853 height=403 frame="msgframe.png" margint=60 marginl=80 marginr=80 marginb=20 size=26 line_height=46]
 
 [iscript]
 GameUI.drawStats();

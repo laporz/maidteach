@@ -26,6 +26,7 @@
 [cm]
 [hidemenubutton]
 [bg storage="room.png" time=0]
+[position layer=message0 page=fore left=0 top=860 width=1920 height=220 frame="msgframe.png" margint=60 marginl=80 marginr=80 marginb=20 size=26 line_height=46]
 [layopt layer=message0 visible=true]
 
 ; ============================================================
